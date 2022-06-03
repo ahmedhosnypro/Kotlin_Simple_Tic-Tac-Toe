@@ -296,6 +296,177 @@ files:
         }
     }
   learner_created: false
+- name: src/tictactoe/Grid.kt
+  visible: true
+  text: |-
+    package tictactoe
+
+    class Grid internal constructor(inputSymbols: String) {
+        var grid = Array(3) { CharArray(3) }
+        private val rotatedGrid = Array(3) { CharArray(3) }
+        var sides = Array(3) { CharArray(3) }
+
+        init {
+            var symbols = inputSymbols
+            if (symbols.length == 9) {
+                symbols = symbols.replace("_".toRegex(), " ")
+                var j = 0
+                for (i in 0..2) {
+                    grid[0][i] = symbols[j]
+                    j++
+                }
+                for (i in 0..2) {
+                    grid[1][i] = symbols[j]
+                    j++
+                }
+                for (i in 0..2) {
+                    grid[2][i] = symbols[j]
+                    j++
+                }
+                //diagonal
+                val diagonal1 = CharArray(3)
+                for (i in 0..2) {
+                    diagonal1[i] = grid[i][i]
+                }
+                val diagonal2 = CharArray(3)
+                diagonal2[0] = grid[0][2]
+                diagonal2[1] = grid[1][1]
+                diagonal2[2] = grid[2][0]
+                //rotatedGrid
+                for (i in 0..2) {
+                    for (k in 0..2) {
+                        rotatedGrid[i][k] = grid[k][i]
+                    }
+                }
+                sides = arrayOf(
+                    grid[0], grid[1], grid[2], rotatedGrid[0], rotatedGrid[1], rotatedGrid[2],
+                    diagonal1, diagonal2
+                )
+            }
+        }
+
+        override fun toString(): String {
+            val gridBuilder = StringBuilder()
+            for (row in grid) {
+                gridBuilder.append("| ")
+                for (ch in row) {
+                    gridBuilder.append("$ch ")
+                }
+                gridBuilder.append("|").append("\n").append("            ")
+            }
+
+            return """
+                ---------
+                ${gridBuilder.toString().trim()}
+                ---------
+            """.trimIndent()
+        }
+    }
+  learner_created: true
+- name: src/tictactoe/GridState.kt
+  visible: true
+  text: |-
+    package tictactoe
+
+    import java.util.*
+    import kotlin.math.abs
+
+    object GridState {
+        private const val X_WINS = "X wins"
+        private const val O_WINS = "O wins"
+
+        fun state(grid: Grid) {
+            var check = ""
+            var xCount = 0
+            var oCount = 0
+            var empty = 0
+            for (row in grid.grid) {
+                for (ch in row) {
+                    when (ch) {
+                        'X' -> {
+                            xCount++
+                        }
+                        'O' -> {
+                            oCount++
+                        }
+                        ' ' -> {
+                            empty++
+                        }
+                    }
+                }
+            }
+            if (abs(xCount - oCount) > 1) {
+                check = "Impossible"
+            } else {
+                if (empty == 0) {
+                    check = checkSides(grid)
+                } else if (empty > 0) {
+                    check = when (checkSides(grid)) {
+                        "Impossible" -> "Impossible"
+                        X_WINS -> X_WINS
+                        O_WINS -> O_WINS
+                        else -> "Game not finished"
+                    }
+                }
+            }
+            println(check)
+        }
+
+        private fun simpleSides(grid: Grid): CharArray {
+            val sides = grid.sides
+            val simpleSides = CharArray(grid.sides.size)
+            Arrays.fill(simpleSides, 'A')
+            for (i in sides.indices) {
+                var last = sides[i][0]
+                var isInRow = true
+                for (j in 1..2) {
+                    if (sides[i][j] == last) {
+                        last = sides[i][j]
+                    } else {
+                        isInRow = false
+                        break
+                    }
+                }
+                if (isInRow) {
+                    simpleSides[i] = sides[i][0]
+                }
+            }
+            return simpleSides
+        }
+
+        private fun checkSides(grid: Grid): String {
+            var check = ""
+            val sides: CharArray = simpleSides(grid)
+            var xCount = 0
+            var oCount = 0
+            for (i in sides.indices) {
+                if (sides[i] == 'X') {
+                    xCount++
+                } else if (sides[i] == 'O') {
+                    oCount++
+                }
+            }
+            if (xCount > 0 && oCount > 0) {
+                check = "Impossible"
+            } else {
+                if (xCount == 1) {
+                    check = X_WINS
+                } else if (oCount == 1) {
+                    check = O_WINS
+                } else if (xCount == oCount) {
+                    check = "Draw"
+                }
+            }
+            return check
+        }
+    }
+  learner_created: true
+- name: src/tictactoe/Move.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/123/stages/657/implement#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Fri, 03 Jun 2022 04:33:30 UTC
 record: -1

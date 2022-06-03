@@ -315,6 +315,15 @@ files:
         }
     }
   learner_created: false
+- name: src/tictactoe/Grid.kt
+  visible: true
+  learner_created: true
+- name: src/tictactoe/GridState.kt
+  visible: true
+  learner_created: true
 feedback_link: https://hyperskill.org/projects/123/stages/656/implement#comment
-status: Unchecked
-record: -1
+status: Solved
+feedback:
+  message: Congratulations!
+  time: Fri, 03 Jun 2022 04:15:50 UTC
+record: 3

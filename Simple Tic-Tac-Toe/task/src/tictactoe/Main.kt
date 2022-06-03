@@ -1,11 +1,15 @@
 package tictactoe
 
+import tictactoe.Move.move
+
 fun main() {
-    println(
-        """
-        X O X
-        O X O
-        X X O 
-    """.trimIndent()
-    )
+    val grid = Grid()
+    println(grid)
+
+    var toContinue = true
+    while (toContinue) {
+        toContinue = move(grid)
+    }
+
+    println(grid)
 }
