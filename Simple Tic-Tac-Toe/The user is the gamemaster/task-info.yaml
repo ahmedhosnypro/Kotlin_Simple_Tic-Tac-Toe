@@ -258,7 +258,7 @@ files:
 - name: src/tictactoe/Grid.kt
   visible: true
   learner_created: true
-feedback_link: https://hyperskill.org/projects/123/stages/655/implement#comment
+feedback_link: https://hyperskill.org/learn/step/10476#comment
 status: Solved
 feedback:
   message: Congratulations!

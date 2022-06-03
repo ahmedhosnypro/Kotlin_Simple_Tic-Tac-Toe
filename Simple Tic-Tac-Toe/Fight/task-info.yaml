@@ -430,6 +430,177 @@ files:
         }
     }
   learner_created: false
-feedback_link: https://hyperskill.org/projects/123/stages/658/implement#comment
-status: Unchecked
-record: -1
+- name: src/tictactoe/Move.kt
+  visible: true
+  text: |-
+    package tictactoe
+
+    import java.util.*
+
+    object Move {
+        fun move(grid: Grid): Boolean {
+            var isContinue = true
+            val scanner = Scanner(System.`in`)
+            print("Enter the coordinates: ")
+            val coordinates = scanner.nextLine().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            when (checkCoordinates(parseCoordinates(coordinates))) {
+                "notNumber" -> println("You should enter numbers!")
+                "outOfRange" -> println("Coordinates should be from 1 to 3!")
+                "available" -> if (checkMove(parseCoordinates(coordinates), grid)) {
+                    makeMove(parseCoordinates(coordinates), grid)
+                    isContinue = false
+                } else {
+                    println("This cell is occupied! Choose another one!")
+                }
+            }
+            return isContinue
+        }
+
+        private fun parseCoordinates(coordinates: Array<String>): IntArray {
+            val coordinateToInt = intArrayOf(-1, -1)
+            try {
+                coordinateToInt[0] = coordinates[0].toInt() - 1
+                coordinateToInt[1] = coordinates[1].toInt() - 1
+            } catch (ignored: IllegalArgumentException) {
+                // to do
+            }
+            return coordinateToInt
+        }
+
+        private fun checkCoordinates(coordinateToInt: IntArray): String {
+            var check = ""
+            for (j in coordinateToInt) {
+                if (j == -1) {
+                    check = "notNumber"
+                    break
+                } else if (j in 0..2) {
+                    check = "available"
+                } else {
+                    check = "outOfRange"
+                    break
+                }
+            }
+            return check
+        }
+
+        private fun checkMove(coordinateToInt: IntArray, grid: Grid): Boolean {
+            return grid.getGrid()[coordinateToInt[0]][coordinateToInt[1]] == ' '
+        }
+
+        private fun makeMove(coordinateToInt: IntArray, grid: Grid) {
+            val move = grid.getGrid()
+            move[coordinateToInt[0]][coordinateToInt[1]] = 'X'
+            grid.setGrid(move)
+        }
+    }
+  learner_created: true
+- name: src/tictactoe/GridState.kt
+  visible: true
+  text: |-
+    package tictactoe
+
+    import java.util.*
+    import kotlin.math.abs
+
+    object GridState {
+        private const val O_WINS = "O wins"
+        private const val X_WINS = "X wins"
+        fun state(grid: Grid) {
+            var check: String? = ""
+            var xCount = 0
+            var oCount = 0
+            var empty = 0
+            for (row in grid.getGrid()) {
+                for (ch in row) {
+                    when (ch) {
+                        'X' -> {
+                            xCount++
+                        }
+                        'O' -> {
+                            oCount++
+                        }
+                        ' ' -> {
+                            empty++
+                        }
+                    }
+                }
+            }
+            if (abs(xCount - oCount) > 1) {
+                check = "Impossible"
+            } else {
+                if (empty == 0) {
+                    check = checkSides(grid)
+                } else if (empty > 0) {
+                    check = when (checkSides(grid)) {
+                        "Impossible" -> "Impossible"
+                        X_WINS -> X_WINS
+                        O_WINS -> O_WINS
+                        else -> "Game not finished"
+                    }
+                }
+            }
+            println(check)
+        }
+
+        private fun simpleSides(grid: Grid): CharArray {
+            val sides = grid.sides
+            val simpleSides = CharArray(grid.sides.size)
+            Arrays.fill(simpleSides, 'A')
+            for (i in sides.indices) {
+                var last = sides[i][0]
+                var isInRow = true
+                for (j in 1..2) {
+                    if (sides[i][j] == last) {
+                        last = sides[i][j]
+                    } else {
+                        isInRow = false
+                        break
+                    }
+                }
+                if (isInRow) {
+                    simpleSides[i] = sides[i][0]
+                }
+            }
+            return simpleSides
+        }
+
+        private fun checkSides(grid: Grid): String {
+            var check = ""
+            val sides: CharArray = simpleSides(grid)
+            var xCount = 0
+            var oCount = 0
+            for (i in sides.indices) {
+                if (sides[i] == 'X') {
+                    xCount++
+                } else if (sides[i] == 'O') {
+                    oCount++
+                }
+            }
+            if (xCount > 0 && oCount > 0) {
+                check = "Impossible"
+            } else {
+                if (xCount == 1) {
+                    check = X_WINS
+                } else if (oCount == 1) {
+                    check = O_WINS
+                } else if (xCount == oCount) {
+                    check = "Draw"
+                }
+            }
+            return check
+        }
+    }
+  learner_created: true
+- name: src/tictactoe/Grid.kt
+  visible: true
+  learner_created: true
+- name: src/tictactoe/Fight.kt
+  visible: true
+  learner_created: true
+feedback_link: https://hyperskill.org/learn/step/10479#comment
+status: Solved
+feedback:
+  message: Well done! You've finished the project. Select a new project on <a href="https://hyperskill.org/projects">JetBrains
+    Academy</a> to continue learning.
+  time: Fri, 03 Jun 2022 05:59:27 UTC
+record: 5

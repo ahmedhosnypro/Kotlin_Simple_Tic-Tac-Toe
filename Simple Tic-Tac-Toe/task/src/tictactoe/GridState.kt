@@ -6,11 +6,11 @@ import kotlin.math.abs
 object GridState {
     private const val O_WINS = "O wins"
     private const val X_WINS = "X wins"
-    fun state(grid: Grid) {
-        var check: String? = ""
+    fun state(grid: Grid): String {
+        val check: String?
         var xCount = 0
         var oCount = 0
-        var empty = 0
+        var emptyCount = 0
         for (row in grid.getGrid()) {
             for (ch in row) {
                 when (ch) {
@@ -21,27 +21,35 @@ object GridState {
                         oCount++
                     }
                     ' ' -> {
-                        empty++
+                        emptyCount++
                     }
                 }
             }
         }
-        if (abs(xCount - oCount) > 1) {
-            check = "Impossible"
+        check = if (abs(xCount - oCount) > 1) {
+            "Impossible"
         } else {
-            if (empty == 0) {
-                check = checkSides(grid)
-            } else if (empty > 0) {
-                check = when (checkSides(grid)) {
-                    "Impossible" -> "Impossible"
-                    X_WINS -> X_WINS
-                    O_WINS -> O_WINS
-                    else -> "Game not finished"
-                }
+            when (checkSides(grid)) {
+                "Impossible" -> "Impossible"
+                X_WINS -> X_WINS
+                O_WINS -> O_WINS
+                else -> checkEmptyCells(emptyCount)
             }
         }
-        println(check)
+
+        return check
     }
+
+    private fun checkEmptyCells(emptyCount: Int): String {
+        if (emptyCount == 0) {
+            return "Draw"
+        }
+        if (emptyCount > 0) {
+            return "Game not finished"
+        }
+        return "error"
+    }
+
 
     private fun simpleSides(grid: Grid): CharArray {
         val sides = grid.sides
@@ -80,9 +88,9 @@ object GridState {
         if (xCount > 0 && oCount > 0) {
             check = "Impossible"
         } else {
-            if (xCount == 1) {
+            if (xCount == 1 || xCount == 2) {
                 check = X_WINS
-            } else if (oCount == 1) {
+            } else if (oCount == 1 || oCount == 2) {
                 check = O_WINS
             } else if (xCount == oCount) {
                 check = "Draw"
